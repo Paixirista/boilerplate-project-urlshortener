@@ -52,17 +52,22 @@ app.post("/api/shorturl/new", function(req, res) {
     } else {
       count = c + 1;
       var origUrl = req.body.url;
-      var url = new urlModel({
-        original_url: origUrl,
-        short_url: count
-      });
+      
+      if (!/^(https*:\/\/)/.test(origUrl)) {
+        res.send({"error":"invalid URL"});
+      } else {
+        var url = new urlModel({
+         original_url: origUrl,
+          short_url: count
+       });
   
-      url.save();
+        url.save();
   
-      res.send({
-       original_url: origUrl,
-       short_url: count
-     });
+       res.send({
+         original_url: origUrl,
+         short_url: count
+       });
+      }
     }
   });
   
@@ -82,3 +87,4 @@ app.get("/api/shorturl/:number", function(req, res) {
 app.listen(port, function () {
   console.log('Node.js listening ...');
 });
+
