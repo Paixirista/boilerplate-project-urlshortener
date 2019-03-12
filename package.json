@@ -4,7 +4,7 @@
 	"description": "API project for freeCodeCamp",
 	"main": "server.js",
 	"scripts": {
-		"start": "node server.js"
+		"dev": "eval $(cat .env) node server.js"
 	},
 	"dependencies": {
 		"express": "^5.0.0-alpha.2",
