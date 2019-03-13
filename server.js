@@ -5,6 +5,7 @@ var mongo = require('mongodb');
 var mongoose = require('mongoose');
 var bodyParser = require('body-parser');
 var cors = require('cors');
+var dns = require('dns');
 
 var app = express();
 
@@ -52,21 +53,29 @@ app.post("/api/shorturl/new", function(req, res) {
     } else {
       count = c + 1;
       var origUrl = req.body.url;
-      
+
       if (!/^(https*:\/\/)/.test(origUrl)) {
-        res.send({"error":"invalid URL"});
+        return res.send({"error":"invalid URL"});
       } else {
-        var url = new urlModel({
-         original_url: origUrl,
-          short_url: count
-       });
-  
-        url.save();
-  
-       res.send({
-         original_url: origUrl,
-         short_url: count
-       });
+
+        dns.lookup(origUrl.replace(/^(https*:\/\/)/, ""), function(err) {
+          if (err) {
+            console.log(err);
+            return res.send({"error": "invalid URL"});
+          } else {
+            var url = new urlModel({
+              original_url: origUrl,
+               short_url: count
+            });
+       
+             url.save();
+       
+            res.send({
+              original_url: origUrl,
+              short_url: count
+            });
+          }
+        });
       }
     }
   });
